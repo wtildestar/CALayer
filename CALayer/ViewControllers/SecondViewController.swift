@@ -48,6 +48,5 @@ class SecondViewController: UIViewController {
         gradientLayer = CAGradientLayer()
         view.layer.insertSublayer(gradientLayer, at: 0)
     }
-    
-    
+
 }

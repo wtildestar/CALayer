@@ -10,6 +10,30 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    var shapeLayer: CAShapeLayer! {
+        // задаем параметры по умолчанию наблюдателю свойств
+        didSet {
+            shapeLayer.lineWidth = 20
+            shapeLayer.lineCap = .round
+            shapeLayer.fillColor = nil
+            shapeLayer.strokeEnd = 1
+            let color = #colorLiteral(red: 0.1307066083, green: 0.690694809, blue: 0.8784407973, alpha: 1).cgColor
+            shapeLayer.strokeColor = color
+        }
+    }
+    
+    var overShapeLayer: CAShapeLayer! {
+        // задаем параметры по умолчанию наблюдателю свойств
+        didSet {
+            overShapeLayer.lineWidth = 20
+            overShapeLayer.lineCap = .round
+            overShapeLayer.fillColor = nil
+            overShapeLayer.strokeEnd = 0
+            let color = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1).cgColor
+            overShapeLayer.strokeColor = color
+        }
+    }
+    
     var gradientLayer: CAGradientLayer! {
         didSet {
             gradientLayer.startPoint = CGPoint(x: 0, y: 0)
@@ -43,6 +67,16 @@ class ViewController: UIViewController {
     // Срабатывает каждый раз при изменении ориентации устройства
     override func viewDidLayoutSubviews() {
         gradientLayer.frame = CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height)
+        configShapeLayer(shapeLayer)
+        configShapeLayer(overShapeLayer)
+    }
+    
+    func configShapeLayer(_ shapeLayer: CAShapeLayer) {
+        shapeLayer.frame = view.bounds
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: self.view.frame.width / 2 - 100, y: self.view.frame.height / 2))
+        path.addLine(to: CGPoint(x: self.view.frame.width / 2 + 100, y: self.view.frame.height / 2))
+        shapeLayer.path = path.cgPath
     }
     
     override func viewDidLoad() {
@@ -50,8 +84,19 @@ class ViewController: UIViewController {
         
         gradientLayer = CAGradientLayer()
         view.layer.insertSublayer(gradientLayer, at: 0) // gradientLayer at:0 нижний слой
+
+        shapeLayer = CAShapeLayer()
+        view.layer.addSublayer(shapeLayer)
+        overShapeLayer = CAShapeLayer()
+        view.layer.addSublayer(overShapeLayer)
     }
 
-
+    @IBAction func tapped(_ sender: UIButton) {
+        overShapeLayer.strokeEnd += 0.2
+        if overShapeLayer.strokeEnd == 1 {
+            performSegue(withIdentifier: "ShowSecondScreen", sender: self)
+        }
+    }
+    
 }
 
