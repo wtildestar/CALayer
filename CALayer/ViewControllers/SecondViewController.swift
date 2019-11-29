@@ -8,7 +8,36 @@
 
 import UIKit
 
-class SecondViewController: UIViewController {
+@IBDesignable class SecondViewController: UIViewController, CAAnimationDelegate {
+//
+//    func draw(_ rect: CGRect) {
+//        let pathRect = CGRect(x: 100, y: 100, width: rect.width - 200, height: rect.height - 200)
+//        let path = UIBezierPath(roundedRect: pathRect, cornerRadius: 24)
+//        let color = UIColor.red
+//        color.setStroke()
+//        path.stroke()
+//    }
+    
+    var shapeLayer: CAShapeLayer! {
+        didSet {
+            shapeLayer.lineWidth = 5
+            shapeLayer.fillColor = nil
+            shapeLayer.strokeEnd = 1
+            let color = #colorLiteral(red: 0.7635269165, green: 0.06959813833, blue: 0, alpha: 1).cgColor
+            shapeLayer.strokeColor = color
+        }
+    }
+    
+    var overShapeLayer: CAShapeLayer! {
+        didSet {
+            shapeLayer.lineWidth = 5
+            shapeLayer.fillColor = nil
+            shapeLayer.strokeEnd = 0
+            let color = #colorLiteral(red: 0.7635269165, green: 0.06959813833, blue: 0, alpha: 1).cgColor
+            shapeLayer.strokeColor = color
+        }
+    }
+
     
     var gradientLayer: CAGradientLayer! {
         didSet {
@@ -40,13 +69,46 @@ class SecondViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         gradientLayer.frame = CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height)
+        
+        configShapeLayer(shapeLayer)
+        configShapeLayer(overShapeLayer)
+    }
+    
+    func configShapeLayer(_ shapeLayer: CAShapeLayer) {
+        shapeLayer.frame = view.bounds
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: self.view.frame.width / 2 - 100, y: self.view.frame.height / 2))
+        path.addLine(to: CGPoint(x: self.view.frame.width / 2 + 100, y: self.view.frame.height / 2))
+        shapeLayer.path = path.cgPath
+    }
+    
+    private func animationDidLoad() {
+        let animation = CABasicAnimation(keyPath: "strokeEnd")
+        animation.toValue = 1
+        animation.duration = 2
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
+        animation.fillMode = CAMediaTimingFillMode.both
+        animation.isRemovedOnCompletion = false
+        
+        animation.delegate = self
+        
+//        overShapeLayer.add(animation, forKey: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        animationDidLoad()
+        
         gradientLayer = CAGradientLayer()
         view.layer.insertSublayer(gradientLayer, at: 0)
+//        let animation = CABasicAnimation(keyPath: "someKey")
+        
+        shapeLayer = CAShapeLayer()
+        view.layer.addSublayer(shapeLayer)
+        overShapeLayer = CAShapeLayer()
+        view.layer.addSublayer(overShapeLayer)
+        
     }
 
 }
